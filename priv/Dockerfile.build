@@ -1,0 +1,23 @@
+FROM elixir:1.8.1
+
+RUN yes | mix local.hex
+RUN yes | mix local.rebar
+
+# TODO:
+# + Make target env dynamic
+# + Need to swtich or pull the right branch for the env.
+
+ENV MIX_ENV=prod
+WORKDIR /opt/app
+
+# Cache elixir deps
+COPY ./_carrier/ ./
+RUN mix do deps.get, deps.compile
+
+# # Same with npm deps
+# ADD package.json package.json
+# RUN npm install
+
+COPY . .
+
+RUN mix release --env=prod --verbose
