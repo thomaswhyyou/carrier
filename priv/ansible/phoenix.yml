@@ -1,0 +1,16 @@
+# Search and replace 'xxx'
+---
+- hosts: phoenix
+  become: yes
+  vars:
+    app_name: xxx
+    app_user: xxx
+    app_root_dir: /opt/app/{{ app_name }}
+    elb_health_endpoint: /stats/health  # for example when using ELB
+    ansible_python_interpreter: "/usr/bin/python3"
+
+  roles:
+    - setup_basic_packages
+    # Before running, make sure to update the key pair in .ssh and files
+    - setup_app_user
+    - setup_nginx_for_phoenix

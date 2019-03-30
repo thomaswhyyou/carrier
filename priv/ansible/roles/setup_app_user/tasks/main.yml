@@ -1,0 +1,27 @@
+---
+- name: ensure {{ app_user }} user is present
+  user:
+    name: "{{ app_user }}"
+    state: present
+    shell: "/bin/bash"
+
+- name: create releases dir owned by user {{ app_user }}
+  file:
+    path: "{{ app_root_dir }}/releases"
+    owner: "{{ app_user }}"
+    state: directory
+
+- name: add ssh key (taret_env = vagrant)
+  authorized_key:
+    user: "{{ app_user }}"
+    key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+  when: run_env == "vagrant"
+
+- name: add ssh key (taret_env = prod)
+  authorized_key:
+    user: "{{ app_user }}"
+    key: "{{ lookup('file', 'app_user.pub') }}"
+  when: run_env == "prod"
+
+# Reference:
+# https://keksi.io/tutorials/2016/12/05/how-to-manage-remote-server-users-with-ansible/

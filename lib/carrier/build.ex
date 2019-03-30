@@ -1,7 +1,8 @@
 defmodule Carrier.Build do
   require Logger
-  import Kitch.SystemUtil, only: [halt_with_error: 1, sys_cmd: 2, sys_cmd!: 2]
-  import Carrier.Common, only: [
+
+  import Kitch.SystemUtil, only: [halt_with_error: 1, sys_cmd!: 2]
+  import Carrier.Global, only: [
     ensure_target_env!: 1,
     release_tarball_dist_path: 1,
     release_envrc_dist_path: 1,
@@ -12,8 +13,9 @@ defmodule Carrier.Build do
     app_name: 0,
   ]
 
-  @dist_dir "./_dist"
-  @tmp_dir "./_carrier"
+  # TODO:
+  # add hooks, :before_build, :after_build
+  # configure webpack?
 
   def build(args) do
     ensure_docker!()
@@ -23,9 +25,9 @@ defmodule Carrier.Build do
 
     try do
       ensure_work_dir!()
-      compile_setup_files()
-      # copy_envrc_for_dist(target_env)
+      before_build()
       do_build(target_env, dockerfile)
+      after_build()
     after
       cleanup_work_dir!()
     end
@@ -54,8 +56,21 @@ defmodule Carrier.Build do
     Application.app_dir(:carrier, Path.join("priv", "Dockerfile.build"))
   end
 
+  defp before_build() do
+    # add :before_build hook
+    # TODO: frontend build
+  end
+
+  defp after_build() do
+    # add :after_build hook
+  end
+
   defp do_build(target_env, dockerfile) do
+    Logger.info("Preparing to build a release..")
+    copy_over_setup_files!()
+    copy_over_envrc_file!(target_env)
     ensure_release_dist_dir!(target_env)
+
     image_name = "#{app_name()}:build"
     cid = "carrier-#{UUID.uuid4()}"
 
@@ -63,7 +78,6 @@ defmodule Carrier.Build do
     docker(:build, dockerfile, image_name, [])
 
     Logger.info("Copying a release from: #{cid}")
-    docker(:rm, cid)
     docker(:create, cid, image_name)
 
     # TODO: Below are hardcoded into Dockerfile.build
@@ -73,17 +87,12 @@ defmodule Carrier.Build do
     docker(:cp, cid, source, dest)
     docker(:rm, cid)
 
-    # Logger.info("Copying a .envrc from")
-    # copy_envrc_for_dist(target_env)
-
     Logger.info("Finished building a release: #{dest}")
   end
 
-  defp ensure_release_dist_dir!(target_env) do
-    target_env |> release_dist_dir() |> File.mkdir_p!()
-  end
-
-  defp compile_setup_files() do
+  defp copy_over_setup_files!() do
+    # Should happen before the actual build, used as a cache mechanism
+    # for docker for elixir deps.
     [
       Path.wildcard("./config/"),
       Path.wildcard("./mix.exs"),
@@ -93,18 +102,22 @@ defmodule Carrier.Build do
     |> Enum.each(fn f ->
       dest = Path.join(root_work_dir(), f)
       dest |> Path.dirname() |> File.mkdir_p()
-      File.cp_r(f, dest)
+      File.cp_r!(f, dest)
     end)
   end
 
-  # defp copy_envrc_for_dist(target_env) do
-  #   envrc = Path.join(root_envrc_dir(), target_env)
-  #
-  #   if File.exists?(envrc) do
-  #     dest = dist_path_release_envrc(target_env)
-  #     File.cp!(envrc, dest)
-  #   end
-  # end
+  defp copy_over_envrc_file!(target_env) do
+    envrc = Path.join(root_envrc_dir(), "#{target_env}.toml")
+
+    if File.exists?(envrc) do
+      dest = release_envrc_dist_path(target_env)
+      File.cp!(envrc, dest)
+    end
+  end
+
+  defp ensure_release_dist_dir!(target_env) do
+    target_env |> release_dist_dir() |> File.mkdir_p!()
+  end
 
   defp docker(:cp, cid, source, dest) do
     sys_cmd!("docker", ["cp", "#{cid}:#{source}", dest])
@@ -122,7 +135,7 @@ defmodule Carrier.Build do
   end
 
   defp docker(:rm, cid) do
-    sys_cmd("docker", ["rm", "-f", cid])
+    sys_cmd!("docker", ["rm", "-f", cid])
   end
 
   defp ensure_work_dir!(),

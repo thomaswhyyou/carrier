@@ -1,0 +1,21 @@
+---
+- name: Run apt-get update
+  apt:
+    update_cache: yes
+
+# Erlang :crypto seems to require openssl 1.1, so install a couple packages
+# to build from source. https://stackoverflow.com/a/44789238/3479934
+#
+# UPDATE (Mar 2019): No longer required on Ubuntu 18.04? Already has openssl 1.1.0g
+# - name: install basic packages
+#   apt:
+#     name: ['build-essential', 'libssl-dev']
+#     state: present
+
+# - name: Remove useless packages from the cache
+#   apt:
+#     autoclean: yes
+#
+# - name: Remove dependencies that are no longer required
+#   apt:
+#     autoremove: yes

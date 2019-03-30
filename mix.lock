@@ -11,5 +11,7 @@
   "plug_cowboy": {:hex, :plug_cowboy, "2.0.2", "6055f16868cc4882b24b6e1d63d2bada94fb4978413377a3b32ac16c18dffba2", [:mix], [{:cowboy, "~> 2.5", [hex: :cowboy, repo: "hexpm", optional: false]}, {:plug, "~> 1.7", [hex: :plug, repo: "hexpm", optional: false]}], "hexpm"},
   "plug_crypto": {:hex, :plug_crypto, "1.0.0", "18e49317d3fa343f24620ed22795ec29d4a5e602d52d1513ccea0b07d8ea7d4d", [:mix], [], "hexpm"},
   "ranch": {:hex, :ranch, "1.7.1", "6b1fab51b49196860b733a49c07604465a47bdb78aa10c1c16a3d199f7f8c881", [:rebar3], [], "hexpm"},
+  "ssh_client_key_api": {:hex, :ssh_client_key_api, "0.2.1", "335427ffda26fe5c3f1ed1011e601aba03ca2cd30623e94c6a089a068c575258", [:mix], [], "hexpm"},
+  "sshkit": {:hex, :sshkit, "0.1.0", "e8f74a9e35e6929df7cd581ce43a5a9ac840cc0757381a8fc9d706909cdee4c3", [:mix], [], "hexpm"},
   "uuid": {:hex, :uuid, "1.1.8", "e22fc04499de0de3ed1116b770c7737779f226ceefa0badb3592e64d5cfb4eb9", [:mix], [], "hexpm"},
 }

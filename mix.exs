@@ -22,13 +22,13 @@ defmodule Carrier.MixProject do
   defp deps do
     [
       {:uuid, "~> 1.1"},
-      {:distillery, "~> 2.0", runtime: false},
+      {:sshkit, "~> 0.1.0"},
+      {:ssh_client_key_api, "~> 0.2.1"},
+
+      # Kitch requires Ecto
       (if Mix.env() != :dev,
         do: {:kitch, git: "https://github.com/thomaswhyyou/kitch.ex.git"},
         else: {:kitch, path: "/Users/tyu/proj/kitch"}),
-
-      # {:dep_from_hexpm, "~> 0.3.0"},
-      # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"},
     ]
   end
 end
