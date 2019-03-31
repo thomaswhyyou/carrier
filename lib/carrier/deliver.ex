@@ -2,7 +2,6 @@ defmodule Carrier.Deliver do
   require Mix.Config
   require Logger
 
-  import Kitch.SystemUtil, only: [halt_with_error: 1, sys_cmd!: 2]
   import Carrier.Global, only: [
     ensure_target_env!: 1,
     ensure_deploy_config!: 1,
@@ -12,6 +11,8 @@ defmodule Carrier.Deliver do
     app_version: 0,
     tarball_filename: 0,
     envrc_filename: 0,
+    halt_with_error: 1,
+    sys_cmd!: 2,
   ]
   alias Carrier.SSH
 

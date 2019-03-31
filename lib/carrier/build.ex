@@ -1,7 +1,6 @@
 defmodule Carrier.Build do
   require Logger
 
-  import Kitch.SystemUtil, only: [halt_with_error: 1, sys_cmd!: 2]
   import Carrier.Global, only: [
     ensure_target_env!: 1,
     release_tarball_dist_path: 1,
@@ -11,6 +10,8 @@ defmodule Carrier.Build do
     root_envrc_dir: 0,
     app_version: 0,
     app_name: 0,
+    halt_with_error: 1,
+    sys_cmd!: 2,
   ]
 
   # TODO:

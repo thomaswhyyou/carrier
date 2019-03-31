@@ -1,8 +1,9 @@
 defmodule Carrier.Init do
   require Logger
 
-  import Kitch.SystemUtil, only: [sys_cmd!: 2]
-  alias Kitch.PrintUtil
+  import Carrier.Global, only: [
+    sys_cmd!: 2,
+  ]
 
   @rel_commands_dir "./rel/commands"
   @dest_ansible_dir "./ansible"
@@ -47,7 +48,7 @@ defmodule Carrier.Init do
   defp generate_db_commands(commands) do
     Enum.each(commands, &write_db_command_executable/1)
 
-    PrintUtil.info("""
+    Logger.warn("""
     Make sure to register the generated commands in your release config, for example:
 
     set commands: [

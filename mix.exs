@@ -24,11 +24,7 @@ defmodule Carrier.MixProject do
       {:uuid, "~> 1.1"},
       {:sshkit, "~> 0.1.0"},
       {:ssh_client_key_api, "~> 0.2.1"},
-
-      # Kitch requires Ecto
-      (if Mix.env() != :dev,
-        do: {:kitch, git: "https://github.com/thomaswhyyou/kitch.ex.git"},
-        else: {:kitch, path: "/Users/tyu/proj/kitch"}),
+      {:ecto_sql, "~> 3.0.5"},
     ]
   end
 end

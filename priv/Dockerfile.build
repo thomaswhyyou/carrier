@@ -6,13 +6,14 @@ RUN yes | mix local.rebar
 # TODO:
 # + Make target env dynamic
 # + Need to swtich or pull the right branch for the env.
+# + RUN mix should be templatable (e.g. mix phx.digest)
 
 ENV MIX_ENV=prod
 WORKDIR /opt/app
 
 # Cache elixir deps
 COPY ./_carrier/ ./
-RUN mix do deps.get, deps.compile
+RUN mix do deps.get, deps.compile, phx.digest
 
 # # Same with npm deps
 # ADD package.json package.json

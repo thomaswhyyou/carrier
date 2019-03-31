@@ -10,6 +10,6 @@ defmodule Mix.Tasks.Carrier.Deploy do
 
     # TODO: run migration, add commands
 
-    Mix.Task.run("carrier.restart", args)
+    # Mix.Task.run("carrier.restart", args)
   end
 end

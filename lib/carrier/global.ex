@@ -1,5 +1,5 @@
 defmodule Carrier.Global do
-  import Kitch.SystemUtil, only: [halt_with_error: 1]
+  require Logger
 
   @root_dist_dir "./_dist"
   @root_work_dir "./_carrier"
@@ -12,19 +12,6 @@ defmodule Carrier.Global do
     target_release: :string,
     remote_command: :string,
   ]
-
-  def app_version() do
-    Mix.Project.get.project[:version]
-  end
-
-  def app_name() do
-    release_name_from_cwd =
-      File.cwd!
-      |> Path.basename
-      |> String.replace("-", "_")
-
-    Mix.Project.get.project[:app] || release_name_from_cwd
-  end
 
   # How release artifacts will be named
 
@@ -110,5 +97,35 @@ defmodule Carrier.Global do
       {switches, args, []} -> {switches, args}
       {_, _, unknown} -> raise(ArgumentError, message: "Unknown argument(s) given: #{inspect(unknown)}")
     end
+  end
+
+  # Helpers
+
+  def app_version() do
+    Mix.Project.get.project[:version]
+  end
+
+  def app_name() do
+    release_name_from_cwd =
+      File.cwd!
+      |> Path.basename
+      |> String.replace("-", "_")
+
+    Mix.Project.get.project[:app] || release_name_from_cwd
+  end
+
+  def halt_with_error(message) when is_binary(message) do
+    Logger.error(message)
+    # Otherwise quits even before error message?
+    :timer.sleep(100)
+    System.halt(1)
+  end
+
+  def sys_cmd(cmd, args) do
+    System.cmd(cmd, args, into: IO.stream(:stdio, :line))
+  end
+
+  def sys_cmd!(cmd, args) do
+    {_, 0} = sys_cmd(cmd, args)
   end
 end
