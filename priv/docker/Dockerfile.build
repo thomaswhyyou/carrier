@@ -13,7 +13,7 @@ WORKDIR /opt/app
 
 # Cache elixir deps
 COPY ./_carrier/ ./
-RUN mix do deps.get, deps.compile, phx.digest
+RUN mix do deps.get, deps.compile
 
 # # Same with npm deps
 # ADD package.json package.json
@@ -21,5 +21,8 @@ RUN mix do deps.get, deps.compile, phx.digest
 
 # Except as filtered by .dockerignore
 COPY . .
+
+# priv/static need to exist, so do this after COPY
+RUN mix do phx.digest
 
 RUN mix release --env=prod --verbose
