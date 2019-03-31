@@ -55,7 +55,7 @@ defmodule Carrier.Build do
   end
 
   defp fallback_dockerfile() do
-    Application.app_dir(:carrier, Path.join("priv", "Dockerfile.build"))
+    Application.app_dir(:carrier, Path.join("priv", "docker/Dockerfile.build"))
   end
 
   defp before_build() do

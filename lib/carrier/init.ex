@@ -13,6 +13,7 @@ defmodule Carrier.Init do
   def init(args) do
     init_distillery_release(args)
     copy_over_ansible_playbooks()
+    copy_over_dockerignore()
     generate_db_commands(["migrate", "rollback", "seed"])
   end
 
@@ -46,6 +47,20 @@ defmodule Carrier.Init do
     File.cp_r!(ansible_dir, @dest_ansible_dir)
   end
 
+  defp copy_over_dockerignore() do
+    case File.exists?(".dockerignore") do
+      true -> Logger.warn(".dockerignore already exists, skipping..")
+      false -> do_copy_over_dockerignore()
+    end
+  end
+
+  defp do_copy_over_dockerignore() do
+    Logger.info("Copying over default .dockerignore.. Make changes as needed")
+    dockerignore = from_priv_dir(["docker", ".dockerignore"])
+
+    File.cp!(dockerignore, ".dockerignore")
+  end
+
   defp generate_db_commands(commands) do
     Enum.each(commands, &write_db_command_executable/1)
 
@@ -53,9 +68,9 @@ defmodule Carrier.Init do
     Make sure to register the generated commands in your release config, for example:
 
     set commands: [
-      "db_migrate": "rel/commands/db_migrate.sh",
-      "db_rollback": "rel/commands/db_rollback.sh",
-      "db_seed": "rel/commands/db_seed.sh",
+      db_migrate: "rel/commands/db_migrate.sh",
+      db_rollback: "rel/commands/db_rollback.sh",
+      db_seed: "rel/commands/db_seed.sh",
     ]
     """)
   end

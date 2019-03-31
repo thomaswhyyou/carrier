@@ -1,5 +1,5 @@
 defmodule Carrier.RepoRun do
-  require Logger
+  # require Logger
 
   # References:
   #
@@ -46,20 +46,20 @@ defmodule Carrier.RepoRun do
   end
 
   defp start_services() do
-    Logger.info("==> Starting dependencies..")
+    IO.puts("==> Starting dependencies..")
 
     # Start apps necessary for executing migrations
     Enum.each(@start_apps, &Application.ensure_all_started/1)
 
     # Start the Repo(s) for app
-    Logger.info("==> Starting repos..")
+    IO.puts("==> Starting repos..")
 
     # Switch pool_size to 2 for ecto > 3.0
     Enum.each(ecto_repos!(), & &1.start_link(pool_size: 2))
   end
 
   defp stop_services() do
-    Logger.info("==> All done! Stopping services..")
+    IO.puts("==> All done! Stopping services..")
     :init.stop()
   end
 
@@ -69,7 +69,7 @@ defmodule Carrier.RepoRun do
 
   defp do_migrate_for(repo, direction) do
     app = Keyword.get(repo.config, :otp_app)
-    Logger.info("==> Running migrations: #{direction} on #{app}..")
+    IO.puts("==> Running migrations: #{direction} on #{app}..")
 
     migrations_path = priv_path_for(app, "repo/migrations")
 
@@ -91,11 +91,11 @@ defmodule Carrier.RepoRun do
     seeds_path = priv_path_for(app, "repo/seeds.exs")
 
     if File.exists?(seeds_path) do
-      Logger.info("==> Running seeds for: #{app}..")
+      IO.puts("==> Running seeds for: #{app}..")
       Code.eval_file(seeds_path)
-      Logger.info("==> Finished running seeds script.")
+      IO.puts("==> Finished running seeds script.")
     else
-      Logger.info("==> No seeds script detected, nothing more to do.")
+      IO.puts("==> No seeds script detected, nothing more to do.")
     end
   end
 

@@ -1,0 +1,14 @@
+.git
+_build
+cover
+deps
+doc
+tmp
+erl_crash.dump
+*.ez
+
+_dist
+**/test
+**/node_modules
+**/.vagrant
+**/.terraform
