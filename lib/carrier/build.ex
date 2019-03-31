@@ -95,10 +95,10 @@ defmodule Carrier.Build do
   defp copy_over_setup_files!() do
     # Should happen before the actual build, used as a cache mechanism
     # for docker for elixir deps.
+    # IMPORTANT: Don't include mix.lock, let it generate at build
     [
       Path.wildcard("./config/"),
       Path.wildcard("./mix.exs"),
-      Path.wildcard("./mix.lock")
     ]
     |> List.flatten()
     |> Enum.each(fn f ->

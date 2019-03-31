@@ -12,3 +12,6 @@ _dist
 **/node_modules
 **/.vagrant
 **/.terraform
+
+# IMPORTANT: Let it generate at build
+mix.lock
