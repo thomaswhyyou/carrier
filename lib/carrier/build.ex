@@ -29,6 +29,7 @@ defmodule Carrier.Build do
       ensure_work_dir!()
       before_build()
       do_build(target_env, dockerfile)
+      copy_over_envrc_file!(target_env)
       after_build()
     after
       cleanup_work_dir!()
@@ -70,7 +71,6 @@ defmodule Carrier.Build do
   defp do_build(target_env, dockerfile) do
     Logger.info("Preparing to build a release..")
     copy_over_setup_files!()
-    copy_over_envrc_file!(target_env)
     ensure_release_dist_dir!(target_env)
 
     image_name = "#{app_name()}:build"
@@ -95,10 +95,10 @@ defmodule Carrier.Build do
   defp copy_over_setup_files!() do
     # Should happen before the actual build, used as a cache mechanism
     # for docker for elixir deps.
-    # IMPORTANT: Don't include mix.lock, let it generate at build
     [
       Path.wildcard("./config/"),
       Path.wildcard("./mix.exs"),
+      # Don't include mix.lock, let it generate at build..
     ]
     |> List.flatten()
     |> Enum.each(fn f ->
@@ -109,6 +109,8 @@ defmodule Carrier.Build do
   end
 
   defp copy_over_envrc_file!(target_env) do
+    # Do this after build is finished, so directories exist.
+    Logger.info("Copying over config.toml to pair with the release..")
     envrc = Path.join(root_envrc_dir(), "#{target_env}.toml")
 
     if File.exists?(envrc) do

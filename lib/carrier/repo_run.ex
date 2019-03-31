@@ -46,8 +46,6 @@ defmodule Carrier.RepoRun do
   end
 
   defp start_services() do
-    Logger.info("==> Starting dependencies..")
-
     # Start apps necessary for executing migrations
     Enum.each(@start_apps, &Application.ensure_all_started/1)
 
