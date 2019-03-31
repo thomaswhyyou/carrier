@@ -1,56 +1,105 @@
 defmodule Carrier.RepoRun do
-  # require Logger
+  require Logger
 
-  def migrate(), do: do_migrate(:up)
+  # References:
+  #
+  # https://dreamconception.com/tech/phoenix-automated-build-and-deploy-made-simple/
+  # https://hexdocs.pm/distillery/guides/running_migrations.html#migration-module
 
-  def rollback(), do: do_migrate(:down)
+  @start_apps [
+    :crypto,
+    :ssl,
+    :postgrex,
+    :ecto,
+    :ecto_sql,
+    :telemetry,
 
-  def seed(), do: do_seed()
+    # extra_applications
+    :logger
+  ]
+
+  def migrate() do
+    start_services()
+    do_migrate(:up)
+    stop_services()
+  end
+
+  def rollback() do
+    start_services()
+    do_migrate(:down)
+    stop_services()
+  end
+
+  def seed() do
+    start_services()
+    do_migrate(:up)
+    do_seed()
+    stop_services()
+  end
 
   #
   # Private
   #
 
-  @app Mix.Project.get.project[:app]
+  defp ecto_repos!() do
+    Application.fetch_env!(:carrier, :otp_app) |> Application.get_env(:ecto_repos, [])
+  end
 
-  defp ensure_all_started() do
-    # app = Mix.Project.get.project[:app]
+  defp start_services() do
+    Logger.info("==> Starting dependencies..")
 
-    IO.puts("==> Ensure all started: #{@app}.")
-    Application.ensure_all_started(@app)
+    # Start apps necessary for executing migrations
+    Enum.each(@start_apps, &Application.ensure_all_started/1)
+
+    # Start the Repo(s) for app
+    Logger.info("==> Starting repos..")
+
+    # Switch pool_size to 2 for ecto > 3.0
+    Enum.each(ecto_repos!(), & &1.start_link(pool_size: 2))
+  end
+
+  defp stop_services() do
+    Logger.info("==> All done! Stopping services..")
+    :init.stop()
   end
 
   defp do_migrate(direction) when is_atom(direction) do
-    {:ok, _} = ensure_all_started()
+    Enum.each(ecto_repos!(), fn repo -> do_migrate_for(repo, direction) end)
+  end
 
-    repos = Application.get_env(@app, :ecto_repos, [])
-    migrations_path = priv_path_to(@app, "repo/migrations")
+  defp do_migrate_for(repo, direction) do
+    app = Keyword.get(repo.config, :otp_app)
+    Logger.info("==> Running migrations: #{direction} on #{app}..")
 
-    IO.puts("==> Running migration: #{direction}..")
-    Enum.each(repos, fn repo ->
-      Ecto.Migrator.run(repo, migrations_path, direction, all: true)
-    end)
+    migrations_path = priv_path_for(app, "repo/migrations")
 
-    IO.puts("==> Finished migration: #{direction}.")
-    :init.stop()
+    opts =
+      case direction do
+        :up -> [all: true]
+        :down -> [step: 1]
+      end
+
+    Ecto.Migrator.run(repo, migrations_path, direction, opts)
   end
 
   defp do_seed() do
-    {:ok, _} = ensure_all_started()
-
-    seed_script = priv_path_to(@app, "repo/seeds.exs")
-
-    if File.exists?(seed_script) do
-      Code.eval_file(seed_script)
-      IO.puts("==> Finished running seeds script.")
-    else
-      IO.puts("==> No seeds script detected, nothing more to do.")
-    end
-
-    :init.stop()
+    Enum.each(ecto_repos!(), &do_seed_for/1)
   end
 
-  defp priv_path_to(app, subpath) do
+  defp do_seed_for(repo) do
+    app = Keyword.get(repo.config, :otp_app)
+    seeds_path = priv_path_for(app, "repo/seeds.exs")
+
+    if File.exists?(seeds_path) do
+      Logger.info("==> Running seeds for: #{app}..")
+      Code.eval_file(seeds_path)
+      Logger.info("==> Finished running seeds script.")
+    else
+      Logger.info("==> No seeds script detected, nothing more to do.")
+    end
+  end
+
+  defp priv_path_for(app, subpath) do
     app
     |> :code.priv_dir()
     |> Path.join(subpath)
