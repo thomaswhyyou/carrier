@@ -1,5 +1,5 @@
 defmodule Carrier.RepoRun do
-  require Logger
+  # require Logger
 
   def migrate(), do: do_migrate(:up)
 
@@ -16,7 +16,7 @@ defmodule Carrier.RepoRun do
   defp ensure_all_started() do
     # app = Mix.Project.get.project[:app]
 
-    Logger.info("==> Ensure all started: #{@app}.")
+    IO.puts("==> Ensure all started: #{@app}.")
     Application.ensure_all_started(@app)
   end
 
@@ -26,12 +26,12 @@ defmodule Carrier.RepoRun do
     repos = Application.get_env(@app, :ecto_repos, [])
     migrations_path = priv_path_to(@app, "repo/migrations")
 
-    Logger.info("==> Running migration: #{direction}..")
+    IO.puts("==> Running migration: #{direction}..")
     Enum.each(repos, fn repo ->
       Ecto.Migrator.run(repo, migrations_path, direction, all: true)
     end)
 
-    Logger.info("==> Finished migration: #{direction}.")
+    IO.puts("==> Finished migration: #{direction}.")
     :init.stop()
   end
 
@@ -42,9 +42,9 @@ defmodule Carrier.RepoRun do
 
     if File.exists?(seed_script) do
       Code.eval_file(seed_script)
-      Logger.info("==> Finished running seeds script.")
+      IO.puts("==> Finished running seeds script.")
     else
-      Logger.info("==> No seeds script detected, nothing more to do.")
+      IO.puts("==> No seeds script detected, nothing more to do.")
     end
 
     :init.stop()
