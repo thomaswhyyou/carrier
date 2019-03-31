@@ -1,18 +1,19 @@
 defmodule Carrier.Build do
   require Logger
 
-  import Carrier.Global, only: [
-    ensure_target_env!: 1,
-    release_tarball_dist_path: 1,
-    release_envrc_dist_path: 1,
-    release_dist_dir: 1,
-    root_work_dir: 0,
-    root_envrc_dir: 0,
-    app_version: 0,
-    app_name: 0,
-    halt_with_error: 1,
-    sys_cmd!: 2,
-  ]
+  import Carrier.Global,
+    only: [
+      ensure_target_env!: 1,
+      release_tarball_dist_path: 1,
+      release_envrc_dist_path: 1,
+      release_dist_dir: 1,
+      root_work_dir: 0,
+      root_envrc_dir: 0,
+      app_version: 0,
+      app_name: 0,
+      halt_with_error: 1,
+      sys_cmd!: 2
+    ]
 
   # TODO:
   # add hooks, :before_build, :after_build
@@ -97,7 +98,7 @@ defmodule Carrier.Build do
     [
       Path.wildcard("./config/"),
       Path.wildcard("./mix.exs"),
-      Path.wildcard("./mix.lock"),
+      Path.wildcard("./mix.lock")
     ]
     |> List.flatten()
     |> Enum.each(fn f ->

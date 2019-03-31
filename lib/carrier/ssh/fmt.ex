@@ -88,10 +88,10 @@ defmodule Carrier.SSH.Fmt do
   def puts_upload(%SSHKit.Context{} = context, local_path, remote_path) do
     Enum.each(context.hosts, fn host ->
       ([:reset, :bright, :green] ++
-        ["[" <> String.pad_trailing(host.name, 10) <> "] "] ++
-        [:reset, :yellow, "UPLOAD", " "] ++
-        [:reset, Path.relative_to_cwd(local_path)] ++
-        [:reset, :yellow, " -> "] ++ [:reset, Path.join(context.path, remote_path)] ++ ["\n"])
+         ["[" <> String.pad_trailing(host.name, 10) <> "] "] ++
+         [:reset, :yellow, "UPLOAD", " "] ++
+         [:reset, Path.relative_to_cwd(local_path)] ++
+         [:reset, :yellow, " -> "] ++ [:reset, Path.join(context.path, remote_path)] ++ ["\n"])
       |> IO.ANSI.format(output_coloring())
       |> IO.write()
     end)
@@ -103,10 +103,10 @@ defmodule Carrier.SSH.Fmt do
   def puts_download(%SSHKit.Context{} = context, remote_path, local_path) do
     Enum.each(context.hosts, fn host ->
       ([:reset, :bright, :green] ++
-        ["[" <> String.pad_trailing(host.name, 10) <> "] "] ++
-        [:reset, :yellow, "DOWNLOAD", " "] ++
-        [:reset, Path.join(context.path, remote_path)] ++
-        [:reset, :yellow, " -> "] ++ [:reset, Path.relative_to_cwd(local_path)] ++ ["\n"])
+         ["[" <> String.pad_trailing(host.name, 10) <> "] "] ++
+         [:reset, :yellow, "DOWNLOAD", " "] ++
+         [:reset, Path.join(context.path, remote_path)] ++
+         [:reset, :yellow, " -> "] ++ [:reset, Path.relative_to_cwd(local_path)] ++ ["\n"])
       |> IO.ANSI.format(output_coloring())
       |> IO.write()
     end)

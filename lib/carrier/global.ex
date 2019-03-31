@@ -10,7 +10,7 @@ defmodule Carrier.Global do
   @accepted_args [
     target_env: :string,
     target_release: :string,
-    remote_command: :string,
+    remote_command: :string
   ]
 
   # How release artifacts will be named
@@ -94,24 +94,27 @@ defmodule Carrier.Global do
     result = OptionParser.parse(args, strict: @accepted_args)
 
     case result do
-      {switches, args, []} -> {switches, args}
-      {_, _, unknown} -> raise(ArgumentError, message: "Unknown argument(s) given: #{inspect(unknown)}")
+      {switches, args, []} ->
+        {switches, args}
+
+      {_, _, unknown} ->
+        raise(ArgumentError, message: "Unknown argument(s) given: #{inspect(unknown)}")
     end
   end
 
   # Helpers
 
   def app_version() do
-    Mix.Project.get.project[:version]
+    Mix.Project.get().project[:version]
   end
 
   def app_name() do
-    release_name_from_cwd =
-      File.cwd!
-      |> Path.basename
-      |> String.replace("-", "_")
+    # Figure out app name in this order:
+    # 1) If explicitly configured for :carrier, use that.
+    # 2) Otherwise, rely on Mix project config.
 
-    Mix.Project.get.project[:app] || release_name_from_cwd
+    Application.get_env(:carrier, :otp_app) || Mix.Project.get().project[:app] ||
+      raise "unable to get: Mix.Project.get.project[:app]"
   end
 
   def halt_with_error(message) when is_binary(message) do

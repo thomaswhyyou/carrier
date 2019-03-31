@@ -1,12 +1,14 @@
 defmodule Carrier.Command do
   require Logger
 
-  import Carrier.Global, only: [
-    ensure_target_env!: 1,
-    ensure_deploy_config!: 1,
-    parse_args!: 1,
-    exec_current_app: 1,
-  ]
+  import Carrier.Global,
+    only: [
+      ensure_target_env!: 1,
+      ensure_deploy_config!: 1,
+      parse_args!: 1,
+      exec_current_app: 1
+    ]
+
   alias Carrier.SSH
 
   @via_primary_only ["db_migrate", "db_rollback", "db_seed"]

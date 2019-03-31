@@ -1,12 +1,14 @@
 defmodule Carrier.Install do
   require Logger
   alias Carrier.SSH
-  import Carrier.Global, only: [
-    ensure_target_env!: 1,
-    ensure_deploy_config!: 1,
-    remote_releases_dir: 0,
-    parse_args!: 1,
-  ]
+
+  import Carrier.Global,
+    only: [
+      ensure_target_env!: 1,
+      ensure_deploy_config!: 1,
+      remote_releases_dir: 0,
+      parse_args!: 1
+    ]
 
   def install(args) do
     target_env = ensure_target_env!(args)

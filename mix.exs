@@ -24,7 +24,7 @@ defmodule Carrier.MixProject do
       {:uuid, "~> 1.1"},
       {:sshkit, "~> 0.1.0"},
       {:ssh_client_key_api, "~> 0.2.1"},
-      {:ecto_sql, "~> 3.0.5"},
+      {:ecto_sql, "~> 3.0.5"}
     ]
   end
 end

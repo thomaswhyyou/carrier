@@ -2,20 +2,21 @@ defmodule Carrier.Deliver do
   require Mix.Config
   require Logger
 
-  import Carrier.Global, only: [
-    ensure_target_env!: 1,
-    ensure_deploy_config!: 1,
-    release_tarball_dist_path: 1,
-    release_envrc_dist_path: 1,
-    remote_releases_dir: 0,
-    app_version: 0,
-    tarball_filename: 0,
-    envrc_filename: 0,
-    halt_with_error: 1,
-    sys_cmd!: 2,
-  ]
-  alias Carrier.SSH
+  import Carrier.Global,
+    only: [
+      ensure_target_env!: 1,
+      ensure_deploy_config!: 1,
+      release_tarball_dist_path: 1,
+      release_envrc_dist_path: 1,
+      remote_releases_dir: 0,
+      app_version: 0,
+      tarball_filename: 0,
+      envrc_filename: 0,
+      halt_with_error: 1,
+      sys_cmd!: 2
+    ]
 
+  alias Carrier.SSH
 
   def deliver(args) do
     # Local source files
@@ -85,7 +86,12 @@ defmodule Carrier.Deliver do
     end)
   end
 
-  def ansible_forward_envrc!(envrc_path, release_dir, %{options: options} = _config, %SSHKit.Host{} = host) do
+  def ansible_forward_envrc!(
+        envrc_path,
+        release_dir,
+        %{options: options} = _config,
+        %SSHKit.Host{} = host
+      ) do
     ansible_user = Keyword.fetch!(host.options, :user)
     private_key = Keyword.fetch!(host.options, :identity)
     workspace = Keyword.fetch!(options, :workspace)
@@ -95,25 +101,39 @@ defmodule Carrier.Deliver do
     inventory = host.name <> ","
 
     copy_src = Path.expand(envrc_path)
-    copy_dest = Path.join([ workspace, release_dir, envrc_filename() ])
-    copy_args = Enum.join([
-      "src=#{copy_src}",
-      "dest=#{copy_dest}",
-      "decrypt=yes",
-    ], " ")
+    copy_dest = Path.join([workspace, release_dir, envrc_filename()])
 
-    extra_args = Enum.join([
-      "ansible_user=#{ansible_user}",
-      "ansible_python_interpreter=/usr/bin/python3",  # Use python3
-    ], " ")
+    copy_args =
+      Enum.join(
+        [
+          "src=#{copy_src}",
+          "dest=#{copy_dest}",
+          "decrypt=yes"
+        ],
+        " "
+      )
+
+    extra_args =
+      Enum.join(
+        [
+          "ansible_user=#{ansible_user}",
+          # Use python3
+          "ansible_python_interpreter=/usr/bin/python3"
+        ],
+        " "
+      )
 
     all_args = [
       "all",
       "-v",
-      "-i", inventory,
-      "-m", "copy",
-      "-a", copy_args,
-      "-e", extra_args,
+      "-i",
+      inventory,
+      "-m",
+      "copy",
+      "-a",
+      copy_args,
+      "-e",
+      extra_args,
       "--private-key=#{private_key}",
       "--vault-password-file=#{vault_password_file}"
     ]

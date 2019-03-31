@@ -1,9 +1,10 @@
 defmodule Carrier.Init do
   require Logger
 
-  import Carrier.Global, only: [
-    sys_cmd!: 2,
-  ]
+  import Carrier.Global,
+    only: [
+      sys_cmd!: 2
+    ]
 
   @rel_commands_dir "./rel/commands"
   @dest_ansible_dir "./ansible"
@@ -60,7 +61,7 @@ defmodule Carrier.Init do
   end
 
   defp write_db_command_executable(command) do
-    app = Mix.Project.get.project[:app]
+    app = Mix.Project.get().project[:app]
 
     content = """
     #!/bin/sh
@@ -82,6 +83,6 @@ defmodule Carrier.Init do
   end
 
   defp from_priv_dir(subpaths) when is_list(subpaths) do
-    Application.app_dir(:carrier, Path.join([ "priv" | subpaths ]))
+    Application.app_dir(:carrier, Path.join(["priv" | subpaths]))
   end
 end

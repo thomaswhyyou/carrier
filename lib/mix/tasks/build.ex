@@ -1,8 +1,10 @@
 defmodule Mix.Tasks.Carrier.Build do
   use Mix.Task
-  import Carrier.Global, only: [
-    halt_with_error: 1,
-  ]
+
+  import Carrier.Global,
+    only: [
+      halt_with_error: 1
+    ]
 
   def run(args) do
     ensure_initialized!()
