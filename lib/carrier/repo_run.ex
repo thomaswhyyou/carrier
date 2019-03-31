@@ -1,8 +1,12 @@
 defmodule Carrier.RepoRun do
+  # Don't use Logger before @start_apps (which includes :logger) are started.
   require Logger
 
-  # References:
+  # This module is meant to be used in runtime for migration tasks.
+  # If anything here is changed, make sure to invalidate cache and refetch
+  # during docker build step (For example, bumping the app version in mix.exs)
   #
+  # References:
   # https://dreamconception.com/tech/phoenix-automated-build-and-deploy-made-simple/
   # https://hexdocs.pm/distillery/guides/running_migrations.html#migration-module
 
