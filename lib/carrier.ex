@@ -17,10 +17,10 @@ defmodule Carrier do
   # (db) migrate, rollback, seed
   defdelegate command(args), to: Carrier.Command
 
-  # XXX: check for primary when running migration
-  # TODO: Could not find static manifest at "/opt/app/byrdieapp/releases/20190326T065728-0.0.1/lib/syndi-0.0.1/priv/static/cache_manifest.json". Run "mix phx.digest" after building your static files or remove the configuration from "config/prod.exs".
   # TODO: Env var to configure cron, twitter subs..
-  # TODO: Buil before_build hooks..
+  # TODO: check for primary when running migration
+  # TODO: Add app rollback command, and include in deploy task
+  # TODO: Include front end build in before_build hooks..
 
   # defdelegate rollback(config), to: Carrier.Rollback
 end
