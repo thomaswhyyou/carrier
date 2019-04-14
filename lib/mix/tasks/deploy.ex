@@ -8,8 +8,7 @@ defmodule Mix.Tasks.Carrier.Deploy do
     args = args ++ ["--target-release", release_tag]
     {:ok, _} = Carrier.install(conn, args)
 
-    # TODO: run migration, add commands
-
-    # Mix.Task.run("carrier.restart", args)
+    Mix.Task.run("carrier.db.migrate", args)
+    Mix.Task.run("carrier.restart", args)
   end
 end
